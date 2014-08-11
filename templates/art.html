@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>draw art </title>
+</head>
+
+<style type="text/css">
+	body {
+		font-family: Liberation Mono;
+		width: 800px;
+		margin: 0 auto;
+		padding: 10px;
+
+	}
+
+	.error {
+		color = red
+	}
+
+	label{
+		display: block;
+		font-size: 20px
+	}
+
+	input[type=text]{
+		width: 400px;
+		font-size: 20px;
+		padding: 2px
+	}
+	textarea{
+		width: 800px;
+		height: 200px;
+		font-size: 10px;
+		font-family: Liberation Mono;
+	}
+
+	.art + .art {
+		margin-top: 20px
+	}
+
+	pre {
+		margin: 0;
+		font-size: 10px
+
+	}
+
+	.art-title{
+		margin: 0;
+		font-size: 17px
+	}
+</style>
+
+<body>
+	
+	<head>ascii	</head>
+	<form method="post">
+		<label>
+			<div>title</div>
+			<input type="text" name="title" value="{{title}}">
+		</label>
+		<label>
+			<div>art</div>
+			<textarea name="art"></textarea>
+		</label>
+
+		<div class="error">{{error}}</div>
+
+		<input type="submit">
+	</form>
+
+	<hr>
+
+	{% for art in arts %}
+	<div class="art">
+		<div class="art-title">{{art.title}}</div>
+		<pre class="art-body">{{art.art}}</pre>
+	</div>
+	{% endfor %}
+</body>	
+</html>

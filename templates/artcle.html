@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Z-kidyBlog</title>
+	<h1><strong>Creat new artcle</strong></h1>
+</head>
+
+<style type="text/css">
+	body {
+		font-family: Liberation Mono;
+		width: 800px;
+		margin: 0 auto;
+		padding: 10px;
+
+	}
+
+	.error {
+		color = red
+	}
+
+	textarea{
+		width: 800px;
+		height: 200px;
+		font-size: 10px;
+		font-family: Liberation Mono;
+	}
+
+	input[type=text]{
+		width: 400px;
+		font-size: 20px;
+		padding: 2px
+	}
+	
+</style>
+<body>
+	<form method="post">
+		<div class='subject'>subject</div>
+		<input type="text" name = "subject" value="{{subject}}">
+
+		<div class="blog">blog</div>
+		<textarea name="art">{{content}}</textarea>
+
+		<div class="error">{{error}}</div>
+
+		<input type="submit">
+	</form>
+</body>
+</html>
