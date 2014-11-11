@@ -11,7 +11,7 @@ import hmac
 
 import urllib2
 from xml.dom import minidom 
-import json
+
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
@@ -85,11 +85,6 @@ class BaseHandler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
-    def render_json(self, d):
-        json_txt = json.dumps(d)
-        self.response.headers['Content-Type'] = 'application/json; charset=UTF-8'
-        self.write(json_txt)
-
     def set_secure_cookie(self, name, val):
         cookie_val = make_secure_val(val)
         self.response.headers.add_header(
@@ -110,11 +105,6 @@ class BaseHandler(webapp2.RequestHandler):
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
-
-        if self.request.url.endswith(".json"):
-            self.format = "json"
-        else:
-            self.format = "html"
 
 class FirstPage(BaseHandler):
     def get(self):
@@ -288,19 +278,6 @@ class Article(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
-    def as_dict(self):
-        time_fmt = "%c"
-        d = {
-            'subject' : self.subject,
-            'content' : self.content,
-            'created' : self.created.strftime(time_fmt),
-            'last_modified' : self.last_modified.strftime(time_fmt)
-
-        }
-        return d
-
-
-
 class Unit3art(BaseHandler):
     def render_front(self,title='',art='',error=''):
         arts = db.GqlQuery("SELECT * FROM Art ORDER BY created DESC")
@@ -337,11 +314,7 @@ class Unit3art(BaseHandler):
 class Blog(BaseHandler):
     def get(self):
         articles = db.GqlQuery("SELECT * FROM Article ORDER BY created DESC")
-
-        if self.format == 'html':
-            self.render("blog.html",articles = articles)
-        else:
-            return self.render_json([p.as_dict() for p in articles])
+        self.render("blog.html",articles = articles)
 
 class Newpost(BaseHandler):
     def render_front(self,subject='',content='',error=''):
@@ -374,10 +347,7 @@ class PostPage(BaseHandler):
             self.error(404)
             return 
 
-        if self.format == 'html':
-            self.render("newarticle.html", article = p)
-        else:
-            self.render_json(p.as_dict())
+        self.render("newarticle.html",article = p )
     #def render_front(self,subject='',content=''):      
      #   self.render("newarticle.html",subject='subject',content = 'content' )
         
@@ -388,9 +358,8 @@ app = webapp2.WSGIApplication([ ('/',FirstPage),
                                 ('/unit2/welcome', Welcome),
                                 ('/unit3/art',Unit3art),
                                 ('/blog',Blog),
-                                ('/blog/?(?:.json)?', Blog),
-                                ('/blog/newpost', Newpost),
-                                ('/blog/([0-9]+)(?:.json)?', PostPage),
+                                ('/blog/(\d+)',PostPage),
+                                ('/blog/newpost',Newpost),
                                 ('/signup',Register),
                                 ('/login',Login),
                                 ('/logout',Logout),
